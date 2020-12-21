@@ -1,0 +1,45 @@
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import org.joda.time.DateTime;
+
+public class ArchiveLogger {
+	private Logger logger = null; 
+	
+	ArchiveLogger(String loggerName, String loggerPath) {
+		System.setProperty("java.util.logging.SimpleFormatter.format",
+				"%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
+		    
+	    //Instantiate the Application Logger
+	    Logger logger = Logger.getLogger(loggerName);
+	    String date = DateTime.now().toString("M-dd-yyyy.HH-mm-ss");
+	    	 
+	    // Simple file logging Handler
+	    FileHandler fh;
+		try {
+			fh = new FileHandler(loggerPath + "/" + loggerName + "-" + date + ".log", true);
+			logger.addHandler(fh);
+		    SimpleFormatter formatter = new SimpleFormatter();	    	
+		    fh.setFormatter(formatter);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    // Ensure nothing is written to stdout
+	    Logger parentLog = logger.getParent();
+	    if (parentLog!=null &&parentLog.getHandlers().length>0) 
+	    	parentLog.removeHandler(parentLog.getHandlers()[0]);
+	  	
+	    this.logger = logger;
+	}
+	
+	public Logger getLogger() {
+		return this.logger;
+	}
+}
