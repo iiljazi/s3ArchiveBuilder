@@ -6,9 +6,20 @@ This project was motivated by a real customer use case consisting of ~ 450 milli
 This source code provides customers interested in this approach with a highly performing and cost effective architecture that can be modified or evolved to meet their business needs. This project should be thought of as a starting point or a framework and should be thoroughly tested in order to ensure that it satisfies the specific use cases or requiments set forth by it's designers.
 
 # Project Overview
-s3ArchiveBuilder is a Maven Java Project leveraging the AWS Java SDK (2.0+). It is compatible with Java 8+ JRE, Maven version 3.6+ and developed on the open Eclipse IDE. Upon modifying and building the source code into an executable jar file it can be executed on an EC2 instance satisfying the requirements of the environment or contaniarized to run on AWS EKS (Elastic Kubernetes Service) or AWS ECS (Elastic Container Service). This solution is a distributed producer/consumer architecture leveraging AWS SQS (Simple Queue Service).
+s3ArchiveBuilder is a Maven Java Project leveraging the AWS Java SDK (2.0+). It is compatible with Java 8+ JRE, Maven version 3.6+ and developed on the open Eclipse IDE. Upon modifying and building the source code into an executable jar file it can be executed on an EC2 instance that satisfies the environment runtime requirements or contaniarized to run on AWS EKS (Elastic Kubernetes Service) or AWS ECS (Elastic Container Service). This solution is a distributed producer/consumer architecture leveraging AWS SQS (Simple Queue Service).
 
 # Macro-Architecture Overview
 ![](images/macro-architecture.png)
 
+<Description of the Architecture>
+  
 
+# Building Instructions
+Clone the project locally and import it as a Maven Project into either Eclipse or the IntelliJ IDE. The following instructions show how to do this in Eclipse but there are widely available tutorials that show how to do this on IntelliJ. 
+
+  1. Open Eclipse and create a new workspace (e.g. s3ArchiveBuilder)
+  
+  2. File -> Import -> Maven -> Existing Maven Project -> Next
+  ![](images/import.png)
+  
+  3. 
