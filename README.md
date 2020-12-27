@@ -14,7 +14,7 @@ s3ArchiveBuilder is a Maven Java Project leveraging the AWS Java SDK (2.0+). It 
 <Description of the Architecture>
   
 
-# Building Instructions
+# Import Instructions
 Clone the project locally and import it as a Maven Project into either Eclipse or the IntelliJ IDE. The following instructions show how to do this in Eclipse but there are widely available tutorials that show how to do this on IntelliJ. 
 
   1. Open Eclipse and create a new workspace (e.g. s3ArchiveBuilder)
@@ -25,8 +25,9 @@ Clone the project locally and import it as a Maven Project into either Eclipse o
   3. Select the root directory containing pom.xml -> Next
   
   4. Project appears in Package Explorer
-  
-  5. Expand the project to view the source tree
   ![](images/source_tree.png)
   
+  5. Modify source code as necessary
   
+  
+# Building and Running Instructions  
