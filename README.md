@@ -30,7 +30,7 @@ Clone the project locally and import it as a Maven Project into either Eclipse o
   5. Modify source code as necessary
   
   
-# Building and Running Instructions  
+# Building Instructions  
 To build the project directly on Eclipse you may configure a Maven Run Configuration. Equivalently the project may also be built on a terminal window (shell).
 
   1. Right Click on Project (Project Explorer) -> Run As -> Run Configurations -> Maven Build
@@ -43,3 +43,5 @@ To build the project directly on Eclipse you may configure a Maven Run Configura
   ...
   ![](images/mvn_shell2.png)
   
+  4. In both cases the resulting executable can be found in the target folder
+  ![](images/jar.png)
