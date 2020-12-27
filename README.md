@@ -9,6 +9,6 @@ This source code provides customers interested in this approach with a highly pe
 s3ArchiveBuilder is a Maven Java Project leveraging the AWS Java SDK (2.0+). It is compatible with Java 8+ JRE, Maven version 3.6+ and developed on the open Eclipse IDE. Upon modifying and building the source code into an executable jar file it can be executed on an EC2 instance satisfying the requirements of the environment or contaniarized to run on AWS EKS (Elastic Kubernetes Service) or AWS ECS (Elastic Container Service). This solution is a distributed producer/consumer architecture leveraging AWS SQS (Simple Queue Service).
 
 # Macro-Architecture Overview
-![Optional Text](../master/images/macro-architecture.png)
+![](images/macro-architecture.png)
 
 
