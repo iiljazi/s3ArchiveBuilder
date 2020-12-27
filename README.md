@@ -24,10 +24,22 @@ Clone the project locally and import it as a Maven Project into either Eclipse o
   
   3. Select the root directory containing pom.xml -> Next
   
-  4. Project appears in Package Explorer
+  4. Project appears in Project Explorer
   ![](images/source_tree.png)
   
   5. Modify source code as necessary
   
   
 # Building and Running Instructions  
+To build the project directly on Eclipse you may configure a Maven Run Configuration. Equivalently the project may also be built on a terminal window (shell).
+
+  1. Right Click on Project (Project Explorer) -> Run As -> Run Configurations -> Maven Build
+  
+  2. Create a New Maven Build Configuration (Substitute path to your own BaseDirectory, Ensure you have selected the right JRE 1.8+)
+  ![](images/mvn_build.png)
+  
+  3. Alternatively Build the Project on Terminal Shell
+  ![](images/mvn_shell1.png)
+  ...
+  ![](images/mvn_shell2.png)
+  
