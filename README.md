@@ -22,4 +22,11 @@ Clone the project locally and import it as a Maven Project into either Eclipse o
   2. File -> Import -> Maven -> Existing Maven Project -> Next
   ![](images/import.png)
   
-  3. 
+  3. Select the root directory containing pom.xml -> Next
+  
+  4. Project appears in Package Explorer
+  
+  5. Expand the project to view the source tree
+  ![](images/source_tree.png)
+  
+  
