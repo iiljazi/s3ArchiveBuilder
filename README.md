@@ -54,3 +54,14 @@ To build the project directly on Eclipse you may configure a Maven Run Configura
   
   4. In both cases the resulting executable can be found in the target folder
   ![](images/jar.png)
+
+# Running Instructions 
+Before running this application it is important to ensure that the compute runtime environment supports the application. Since the application is written in Java it can run on any Platform so long as the Java JRE is installed. As previously noted this project is compatible with Java 8 but should compile and work on higher java versions (8+). With that said it is recommened that some testing is done to ensure that everything will work as expected. To install java 8 openjdk on Amazon Linux 2 issue the following command:
+
+*# sudo yum install java-1.8.0-openjdk
+
+Take note that this command will require access to the internet. If issuing this command from a locked down private subnet, it will not work as there will be no route to the public internet. This will require a NAT Gateway to get out to an internet gateway that can route requests to the public internet. Thus, if this solution is to be executed in a private subnet it is recommened that an AMI be built that contains Java 8.
+
+Configuration
+The application takes a json configuration file
+
