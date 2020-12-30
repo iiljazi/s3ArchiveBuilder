@@ -14,6 +14,7 @@ s3ArchiveBuilder is a Maven Java Project leveraging the AWS Java SDK (2.0+). It 
 In order to be as cost effective as possible this project should be executed on AWS Compute (EC2/EKS/ECS). It is important to note, however, that with the use of IAM Keys it is possible to run this solution on-premises as well. However, the bandwidth costs associated with reading objects out of Amazon S3 should be  considered in the case where the solution is executed outside of AWS Compute. In addition, in the interest of security it is recommened that the solution is executed in a private subnet that can be accessed only via a controlled bastion host as shown in the diagram. Of particular interest are the service endpoints used to communicate with the AWS resources such as S3 and SQS directly via AWS PrivateLink by way of Interface/Gateway Endpoints that can be configured directly from the VPC panel on the AWS Console. See the procedures below for more information on how to do this.
 
 [Procedure to configure S3 Gateway Endpoint](https://aws.amazon.com/blogs/aws/new-vpc-endpoint-for-amazon-s3/)
+
 [Procedure to configure SQS Interface Endpoint](https://aws.amazon.com/about-aws/whats-new/2018/12/amazon-sqs-vpc-endpoints-aws-privatelink/)
 
 Upon configuring the Interface Endpoints from your VPC, use the AWS CLI from an EC2 instance in your private subnet to ensure that the services can be reached via AWS Private Link:
@@ -23,7 +24,7 @@ Upon configuring the Interface Endpoints from your VPC, use the AWS CLI from an 
 #aws sqs list-queues
 ```
 
-
+## Architectural Components
 This project has three major architectural components: controller, producer and consumer. The controller is responsible for reading the configuration and initializing/starting the right processing component either the producer or consumers. The SQS Producer lists objects from a source S3 bucket and constructs archive contexts (work items). A work context contains information about all the keys that should be included into a particular archive file such as tar. Work contexts produced by SQS Producer are uploaded to an AWS SQS Standard Queue where they could be processed by consumers (workers). SQS Consumers retrieve and process work contexts from the queue. Upon retrieving a work context the SQS Consumers will read all the objects listed in the context from Amazon S3 (asynchronously) and write these objects (InputStreams) into a compressed archived file (tar.gz). Once the compressed archive file is created it is once again uploaded to Amazon S3 where a cost effective Lifecycle Policy can help transition the archive object into Glacier. Upon successful archival, the SQS Consumer can optionally delete the object keys included from the source bucket. SQS Consumers will exit as soon as the SQS Queue size is 0. It is recommended that the SQS producer is started prior to the consumers or that the architecture is modified such that the producer can throttle its rate of ingress into the SQS Queue depending on the rate in which the work contexts are being processed.    
 
 The SQS Producer is intented to be single threaded and requires minimal resources to run. It can be effectively executed on free tier compute (e.g. m2.micro) as it is not the performance bottleneck of the system. Work contexts will generally be generated a lot faster than they can be consumed/processed unless the SQS Consumer fleet consists of many EC2 instances each running multiple SQS consumer threads. It is highly recommended that the bulk of intelligence around generating the work contexts is programmed into the Producer. That is, in order to optimize the efficiency of architecture the consumers shouldn't do any special processing that can lead to upredictability of the performance model other than the basic work flow defined; read objects, add objects to archive, upload archive and delete objects.
@@ -31,8 +32,8 @@ The SQS Producer is intented to be single threaded and requires minimal resource
 The SQS Consumers are intended to be run as a multi-threaded, distributed application or cluster that can digest work items from the shared SQS Queue. At present, the SQS Consumers will only run one Consumer thread per vCPU in order to optimize performance and reduce cpu context switching. However, this can easily be modified in the SQS Consumer source code. Each SQS Consumer thread carries out the same function within the s3ArchiveBuilder distributed application. 
   
 
-# Import Instructions
-Clone the project locally and import it as a Maven Project into either Eclipse or the IntelliJ IDE. The following instructions show how to do this in Eclipse but there are widely available tutorials that show how to do this on IntelliJ. 
+# Maven Project Import Instructions
+Use git to clone the project locally and then import it as a Maven Project into your Java IDE. (Eclipse or the IntelliJ). The following instructions show how to do this in Eclipse but there are tutorials available  that show how to do this on IntelliJ. [Import Maven Project into IntelliJ](https://www.lagomframework.com/documentation/1.6.x/java/IntellijMaven.html)
 
   1. Open Eclipse and create a new workspace (e.g. s3ArchiveBuilder)
   
