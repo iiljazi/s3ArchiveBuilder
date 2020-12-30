@@ -19,8 +19,8 @@ In order to be as cost effective as possible this project should be executed on 
 Upon configuring the Interface Endpoints from your VPC, use the AWS CLI from an EC2 instance in your private subnet to ensure that the services can be reached via AWS Private Link:
 
 ```
-*** #aws s3 ls ***
-*** #aws sqs list-queues ***
+#aws s3 ls
+#aws sqs list-queues
 ```
 
 
