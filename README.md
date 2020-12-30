@@ -73,6 +73,34 @@ Before running this application it is important to ensure that the compute runti
 
 Take note that this command will require access to the internet to work as it has to pull from RHEL yum repositories. Issuing this command from an EC2 instance in a private subnet will not work as there will be no route to the public internet. This will require a NAT Gateway to get out to an internet gateway that can route requests to the public internet. Thus, if this solution is to be executed in a private subnet it is recommened that an AMI containing Java 8 be built in a public subnet first. 
 
-##Configuration
-The application takes a json configuration file at runtime as input via Java System Properties. 
+To run the project on AWS Linux 2 issue the following command in a screen session:
+```
+#screen -S producer
+#java -DconfigurationFile='/home/ec2-user/BaseDir0/Configuration/ControllerConfiguration0.json' -jar s3archivebuilder-1.0.0-jar-with-dependencies.jar
+#
+
+CTRL+A+D (detach from screen session)
+screen -r producer (attach to existing screen session)
+```
+
+## Configuration File
+The application takes a json configuration file as input at runtime via a Java System Property. The following configuration options are currently supported. 
+
+```
+{
+    "type":"producer",
+    "baseDirectory":"/home/ec2-user/BaseDir0/",
+    "awsCredentials":"/home/ec2-user/.aws/credentials",
+    "sourceBucket":"migration-archive-objects",
+    "targetBucket":"migration-archive-objects",
+    "archiveFilePrefix":"Archive",
+    "archiveFileFolder":"Archive/",
+    "region":"us-east-2",
+    "queue":"https://sqs.us-east-2.amazonaws.com/815930979491/S3ArchiveBuilder",
+    "groupID":"12345",
+    "filter":"5m-device-metrics",
+    "command":"run",
+    "s3ThreadNum":"1"
+}
+```
 
