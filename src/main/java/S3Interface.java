@@ -21,14 +21,16 @@ public class S3Interface {
 	static ProfileCredentialsProvider credentialsProvider;
 	private static AmazonS3 s3;
 	private static String bucket;
+	private static String targetBucket;
 	private static String region;
 	private static String s3ArchiveFolder;
 	ThreadPoolExecutor executor = null;
 	
-	S3Interface(String bucket, String region, String s3ArchiveFolder, int threadNum, String authType) {
+	S3Interface(String bucket, String targetBucket, String region, String s3ArchiveFolder, int threadNum, String authType) {
 		S3Interface.bucket = bucket;
 		S3Interface.region = region;
 		S3Interface.s3ArchiveFolder = s3ArchiveFolder;
+		S3Interface.targetBucket = targetBucket;
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 		ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(threadNum);
 		
@@ -59,6 +61,10 @@ public class S3Interface {
 	
 	private static String getBucket() {
 		return bucket;
+	}
+	
+	private static String getTargetBucket() {
+		return targetBucket;
 	}
 	
 	private static String getRegion(){
@@ -106,7 +112,7 @@ public class S3Interface {
 		else
 			fullKeyName = folder + "/" + key;
 		
-		Upload upload = tm.upload(getBucket(), fullKeyName, new File(fileName));
+		Upload upload = tm.upload(/*getBucket()*/ getTargetBucket(), fullKeyName, new File(fileName));
 		try {
 			// Wait for upload to complete, when done; shutdown Transfer Manager
 			upload.waitForCompletion();

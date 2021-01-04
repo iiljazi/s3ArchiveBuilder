@@ -26,7 +26,7 @@ public class ArchiveController {
 		this.logger.info("SQS Controller invoked on Base Directory: " + baseDir);
 		
 		// Create S3/SQS Interfaces Required by Producer/Consumer 
-		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getRegion(), configCTX.getArchiveFileFolder(),
+		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getTargetBucket(),configCTX.getRegion(), configCTX.getArchiveFileFolder(),
 				Integer.valueOf(configCTX.getS3ThreadNum()), configCTX.getAuthType());
 		this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), 
 				configCTX.getGroupID(), configCTX.getAuthType());
