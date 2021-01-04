@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -24,27 +25,36 @@ public class S3Interface {
 	private static String s3ArchiveFolder;
 	ThreadPoolExecutor executor = null;
 	
-	S3Interface(String bucket, String region, String s3ArchiveFolder, int threadNum) {
+	S3Interface(String bucket, String region, String s3ArchiveFolder, int threadNum, String authType) {
 		S3Interface.bucket = bucket;
 		S3Interface.region = region;
 		S3Interface.s3ArchiveFolder = s3ArchiveFolder;
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
+		ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(threadNum);
 		
-    	// Credentials in ~/.aws/credentials
-        credentialsProvider = new ProfileCredentialsProvider();
-        try {
-            credentialsProvider.getCredentials();
-        } catch (Exception e) {
-            throw new AmazonClientException(
-                    "Cannot load the credentials from the credential profiles file. " +
-                    "Please make sure that your credentials file is at the correct " +
-                    "location (~/.aws/credentials), and is in valid format.",
-                    e);
+		if(authType.compareTo("iam-keys")==0) {
+			// Credentials in ~/.aws/credentials
+			credentialsProvider = new ProfileCredentialsProvider();
+			try {
+				credentialsProvider.getCredentials();
+			} catch (Exception e) {
+				throw new AmazonClientException(
+						"Cannot load the credentials from the credential profiles file. " +
+						"Please make sure that your credentials file is at the correct " +
+						"location (~/.aws/credentials), and is in valid format.",e);
+			}
+	        s3 = AmazonS3ClientBuilder.standard()
+	        		.withCredentials(credentialsProvider)
+	        		.withRegion(getRegion())
+	        		.withClientConfiguration(s3ClientConfig)
+	        		.build();
         }
-        s3 = AmazonS3ClientBuilder.standard()
-        		.withCredentials(credentialsProvider)
-        		.withRegion(getRegion())
-        		.build();
+		else if(authType.compareTo("iam-role")==0) {
+	        s3 = AmazonS3ClientBuilder.standard()
+	        		.withRegion(getRegion())
+	        		.withClientConfiguration(s3ClientConfig)
+	        		.build();
+		}
 	}
 	
 	private static String getBucket() {

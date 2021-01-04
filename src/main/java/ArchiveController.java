@@ -27,9 +27,9 @@ public class ArchiveController {
 		
 		// Create S3/SQS Interfaces Required by Producer/Consumer 
 		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getRegion(), configCTX.getArchiveFileFolder(),
-				Integer.valueOf(configCTX.getS3ThreadNum()));
+				Integer.valueOf(configCTX.getS3ThreadNum()), configCTX.getAuthType());
 		this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), 
-				configCTX.getGroupID());
+				configCTX.getGroupID(), configCTX.getAuthType());
 		
 		// Initialize Producer
 		if(type.compareTo("producer") == 0) {

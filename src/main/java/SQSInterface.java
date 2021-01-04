@@ -23,24 +23,32 @@ public class SQSInterface {
 	private String groupID;
 	private int maxMessages = 1;
 	
-	SQSInterface(String queueURL, String region, String groupID) {
+	SQSInterface(String queueURL, String region, String groupID, String authType) {
 		this.queueURL = queueURL;
 		this.region = region;
 		this.groupID = groupID;
-		this.credentialsProvider = new ProfileCredentialsProvider();
-	    try {
-	    	credentialsProvider.getCredentials();
-	    } catch (Exception e) {
-	    throw new AmazonClientException(
-	    	"Cannot load the credentials from the credential profiles file. " +
-	        "Please make sure that your credentials file is at the correct " +
-	        "location (~/.aws/credentials), and is in valid format.",
-	        e);
-	    }
-	    sqs = AmazonSQSClientBuilder.standard()
+		
+		if(authType.compareTo("iam-keys")==0) {
+			// Credentials in ~/.aws/credentials
+			credentialsProvider = new ProfileCredentialsProvider();
+			try {
+				credentialsProvider.getCredentials();
+			} catch (Exception e) {
+				throw new AmazonClientException(
+						"Cannot load the credentials from the credential profiles file. " +
+						"Please make sure that your credentials file is at the correct " +
+						"location (~/.aws/credentials), and is in valid format.",e);
+			}
+			sqs = AmazonSQSClientBuilder.standard()
 	        		.withCredentials(credentialsProvider)
 	        		.withRegion(getRegion())
 	        		.build();
+		}
+		else if(authType.compareTo("iam-role")==0) {
+			sqs = AmazonSQSClientBuilder.standard()
+	        		.withRegion(getRegion())
+	        		.build();
+		}
 	}
 	
 	private String getQueueURL() {

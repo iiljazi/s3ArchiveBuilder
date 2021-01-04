@@ -1,5 +1,6 @@
 public class ArchiveConfig {
 	private String type;
+	private String authType;
 	private String baseDirectory;
 	private String awsCredentials;
 	private String sourceBucket;
@@ -13,14 +14,20 @@ public class ArchiveConfig {
 	private String command;
 	private String s3ThreadNum;
 	
-	//S3ArchiveConfiguration() {}
-
 	public String getType() {
 		return this.type;
 	}
-
+	
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getAuthType() {
+		return this.authType;
+	}
+	
+	public void setAuthType(String authType) {
+		this.authType = authType;
 	}
 
 	public String getBaseDirectory() {
