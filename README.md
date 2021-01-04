@@ -87,6 +87,75 @@ screen -r producer (attach to existing screen session)
 The application takes a json configuration file as input at runtime via a Java System Property. The following configuration options are currently supported. 
 
 ```
+Key: type 
+Value: String
+Description: The "type" configuration parameter is set to specify whether the application will run the producer or the consumer 
+Examples: "type":"producer", "type":"consumer"
+
+Key: baseDirectory 
+Value: String
+Description: The "baseDirectory" configuration parameter is the Linux or Windows Directory Path where the application will write logs and use as disk space to generate archives. Sufficient disk space should be allocated to this application in order to support logs as well as NumThreads * Expected Archive Size in bytes
+Examples: "baseDirectory":"/home/ec2-user/BaseDir0/", "baseDirectory":"C:\home\ec2-user\BaseDir0\"
+
+<Drop Aws Credentials Configuration Paremeter>
+<Add Notes how to create an IAM S3 Role and SQS Role and attach it to the EC2 instance running producer or consumer>
+<Drop code for Credentials Provider, or only look for AWS Keys if the customer hasn’t configured roles.
+<Might be worth to have a check to ensure that we can reach the S3 Bucket or SQS Queue from the controller as a check before starting producer/consumer application. 
+
+Key: sourceBucket 
+Value: String
+Description: The "sourceBucket" configuration parameter is the s3 bucket name that will be listed by the SQSProducer in order to generate SQS Work Contexts for SQSConsumer to process. The "sourceBucket" will also be used by SQSConsumer to read objects that will be included in the generated archives. 
+
+Key: targetBucket 
+Value: String
+Description: The "targetBucket" configuration parameter is the s3 bucket name that SQSConsumer will use to upload generated archives. This value may be equal to sourceBucket if generated archives are to be written to the same s3 bucket. 
+
+Key: archiveFilePrefix 
+Value: String
+Description: The archiveFilePrefix configuration parameter is prepended to the generated archive file name. 
+Example: "archiveFilePrefix":"Archive" 
+ArchiveFileName: <archiveFilePrefix>_<device_id>.tar.gz 
+i.e: Archive_device-025dd26c-c7ce-44c3-839d-707ff05c1edf_2018.tar.gz 
+
+Key: archiveFileFolder
+Value: String
+Description: The "archiveFileFolder" configuration parameter is used to specify the folder within the s3 targetBucket where generated archives are to be uploaded by SQSConsumer. If this value is left empty the archive files shall be written at the root location of the targetBucket. It is advisable to set this value to something like Archives/
+Example: "archiveFileFolder":"Archives/",
+ArchiveFolderName: s3://targetBucket/<archiveFileFolder>/<ArchiveFileNames> 
+i.e: s3://uploadArchivesBucket/Archives/Archive_device-025dd26c-c7ce-44c3-839d-707ff05c1edf_2018.tar.gz
+
+Key: region 
+Value: String
+Description: The "region" configuration parameter specifies the AWS region where this application will run. Currently we assume that the S3 buckets and the SQS Queue are in the same region. Additional design considerations and modifications are required to support cross-regional resources. 
+Example: "region":"us-east-2"
+
+Key: queue 
+Value: String
+Description: The "queue" configuration parameter specifies the URL to the Standard SQS Queue that will store the SQS Contexts to be processed by SQSConsumer.
+Example: "queue":"https://sqs.us-east-2.amazonaws.com/12345678912345/S3ArchiveBuilder"
+
+<Drop Parameter GroupID>
+
+listingPrefix>
+Used by SQS Producer during s3 listing as it works to build SQS Contexts. The prefix value is used to return only keys containing the specified prefix. 
+
+<Change filter to listingFilter>
+Name: listingFilter Value: String
+Description: Used by SQS Producer to further filter out keys to be used in archives. By including a filter all keys containing the filter will be included while all keys that don’t contain the filter will be discarded. Could be beneficial for s3 buckets are aren’t optimally partitioned such that a prefix may be used
+
+<++listingMarker>
+Name: listingMarker Value: String
+Description: The starting key of the listing request. The listing marker will tell S3 to return only keys following the specified marker. This parameter is useful for cases where the SQS Producer needs to be restarted where it left off in the event of an abnormal exit or application crash. 
+
+<Change command to sqsProducerMode>
+Name: sqsProducerMode Value: String
+Options: [run, dry-run]
+Description: When this value is set to “run” the SQS Producer will generate SQS Work Contexts and start uploading them to the SQS Queue specified. If the value is set to “dry-run” the SQS Producer will run in test mode. That is it will list and generate contexts but rather than uploading to the SQS Queue it will just log them locally. Useful in customer testing to ensure that the SQS Producer is listing correctly and building work contexts to specification. 
+
+<Change seThreadNum to s3ConnCount
+Name: s3ThreadNum Value: String
+Description: The number of S3 threads to configure in order to read s3 objects in parallel. 
+
 {
     "type":"producer",
     "baseDirectory":"/home/ec2-user/BaseDir0/",
