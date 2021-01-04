@@ -25,10 +25,18 @@ public class ArchiveController {
 		this.logger = new ArchiveLogger(logName, logDir.getAbsolutePath()).getLogger();
 		this.logger.info("SQS Controller invoked on Base Directory: " + baseDir);
 		
+		// Create S3/SQS Interfaces Required by Producer/Consumer 
+		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getRegion(), configCTX.getArchiveFileFolder(),
+				Integer.valueOf(configCTX.getS3ThreadNum()));
+		this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), 
+				configCTX.getGroupID());
+		
+		// Initialize Producer
 		if(type.compareTo("producer") == 0) {
 			this.logger.info("SQS Controller Initializing SQS Producer ... ");
 			initSQSProducer(configCTX);
 		}
+		// Initialize Consumer
 		else if(type.compareTo("consumer") == 0) {
 			this.logger.info("SQS Controller Initializing SQS Consumers ... ");
 			initSQSConsumer(configCTX);
@@ -39,50 +47,41 @@ public class ArchiveController {
 	
 	private void initSQSProducer(ArchiveConfig configCTX) {
 	    // Create Directory Structure for Producer:
-	    // baseDir/Producer/Logs
-	    // baseDir/Producer/Checkpoint
 		this.logger.info("SQS Controller Creating SQS Producer Directory Structure Over Base Directory ... ");
 	    String baseDir = configCTX.getBaseDirectory();
 	    File logPath = new File(baseDir + "/Producer/");
 	    if(!logPath.exists())
 	    	logPath.mkdirs();
 	    
+	    // Create Required Producer Object
 	    this.logger.info("SQS Controller Creating Classes required by SQS Producer ... ");
-	    // Create Required Classes and Launch Producer
-		this.s3 = new S3Interface(configCTX.getSourceBucket(), 
-				configCTX.getRegion(),configCTX.getArchiveFileFolder(), Integer.valueOf(configCTX.getS3ThreadNum()));
-	    this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), 
-	    		configCTX.getGroupID());
 	    this.producer = new SQSProducer(configCTX.getSourceBucket(), this.s3, this.sqs, 
 	    		this.logger,logPath.getAbsolutePath(), configCTX.getCommand());
 	    
+	    // Start SQSProducer Thread
 	    this.logger.info("SQS Controller Starting SQS Producer Thread  ... ");
 	    this.producer.produce(configCTX.getFilter());
 	}
 	
 	private void initSQSConsumer(ArchiveConfig configCTX) {
 	    // Create Directory Structure for Consumers
-	    // baseDir/Consumer/Archives
 		this.logger.info("SQS Controller Creating Classes required by SQS Consumers ... ");
 	    String baseDir = configCTX.getBaseDirectory();
 	    File archiveDir = new File(baseDir + "/Consumer/Archives/");
 	    if(!archiveDir.exists())
 	    	archiveDir.mkdirs();
 	    
-	    // Create Required Classes and Launch Consumers
+	    // Create Required Consumer Object
 	    this.logger.info("SQS Controller Creating SQS Consumers Directory Structure Over Base Directory ... ");
-		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getRegion(), configCTX.getArchiveFileFolder(),
-				Integer.valueOf(configCTX.getS3ThreadNum()));
-		this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), 
-				configCTX.getGroupID());
-		this.disk = new DISKInterface(archiveDir.getAbsolutePath() + "/", configCTX.getArchiveFilePrefix());
+	    this.disk = new DISKInterface(archiveDir.getAbsolutePath() + "/", configCTX.getArchiveFilePrefix());
 		this.consumer = new SQSConsumer(this.s3, this.sqs, this.disk, processors, this.logger);
 		
+		// Start SQSConsumer Threads
 		this.logger.info("SQS Controller Starting SQS Consumer Threads  ... ");
 		this.consumer.consume();
 		
 		// Wait for Consumers to Shutdown and Terminate
-		if(configCTX.getType().compareTo("consumer")==0) {
+		//if(configCTX.getType().compareTo("consumer")==0) {
 			// Ensure consumer executor is closed
 			while(!this.consumer.executor.isTerminated()){
 				this.logger.info("SQS Consumers Actively Working ...");
@@ -94,12 +93,13 @@ public class ArchiveController {
 				}
 			}
 			this.logger.info("Successfully Shutdown SQS Consumer Threads ...");
-		}
+		//}
 	}
 
+	// Main Method
 	public static void main(String[] args) {
 		// Get Path To Configuration
-		ArchiveConfig configCTX = null; // = new S3ArchiveConfiguration();
+		ArchiveConfig configCTX = null;
 		Gson gson = new Gson();
 		ArchiveController controller = null;
 		String configurationFile = System.getProperty("configurationFile");
@@ -109,7 +109,7 @@ public class ArchiveController {
 		else
 			System.out.println("The path variable received is null");
 		
-		// Read Configuration File and Convert S3ArchiveConfiguration Object
+		// Read Json Configuration File and Convert to ArchiveConfig Object
 		FileReader reader;
 		try {
 			reader = new FileReader(configFile);
@@ -134,6 +134,8 @@ public class ArchiveController {
 				e.printStackTrace();
 			}
 		}
+		
+		// Archive Controller Exits
 		controller.logger.info("Successfully Shutdown S3 Interface Executors ...");
 		controller.logger.info("SQS Controller All " + configCTX.getType() + " threads have exited ...");
 		controller.logger.info("SQS Controller Exiting ...");

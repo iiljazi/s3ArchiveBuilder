@@ -30,7 +30,7 @@ public class S3Interface {
 		S3Interface.s3ArchiveFolder = s3ArchiveFolder;
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
 		
-    	// Credentials in /Users/iliri/.aws/credentials
+    	// Credentials in ~/.aws/credentials
         credentialsProvider = new ProfileCredentialsProvider();
         try {
             credentialsProvider.getCredentials();
@@ -38,7 +38,7 @@ public class S3Interface {
             throw new AmazonClientException(
                     "Cannot load the credentials from the credential profiles file. " +
                     "Please make sure that your credentials file is at the correct " +
-                    "location (/Users/iliri/.aws/credentials), and is in valid format.",
+                    "location (~/.aws/credentials), and is in valid format.",
                     e);
         }
         s3 = AmazonS3ClientBuilder.standard()

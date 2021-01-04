@@ -34,7 +34,7 @@ public class SQSInterface {
 	    throw new AmazonClientException(
 	    	"Cannot load the credentials from the credential profiles file. " +
 	        "Please make sure that your credentials file is at the correct " +
-	        "location (/Users/iliri/.aws/credentials), and is in valid format.",
+	        "location (~/.aws/credentials), and is in valid format.",
 	        e);
 	    }
 	    sqs = AmazonSQSClientBuilder.standard()
