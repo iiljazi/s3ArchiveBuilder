@@ -26,13 +26,13 @@ public class S3Interface {
 	private static String s3ArchiveFolder;
 	ThreadPoolExecutor executor = null;
 	
-	S3Interface(String bucket, String targetBucket, String region, String s3ArchiveFolder, int threadNum, String authType) {
+	S3Interface(String bucket, String targetBucket, String region, String s3ArchiveFolder, int s3MaxConCount, String authType) {
 		S3Interface.bucket = bucket;
 		S3Interface.region = region;
 		S3Interface.s3ArchiveFolder = s3ArchiveFolder;
 		S3Interface.targetBucket = targetBucket;
-		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadNum);
-		ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(threadNum);
+		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(s3MaxConCount);
+		ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(s3MaxConCount);
 		
 		if(authType.compareTo("iam-keys")==0) {
 			// Credentials in ~/.aws/credentials

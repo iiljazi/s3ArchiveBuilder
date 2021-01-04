@@ -12,7 +12,7 @@ public class ArchiveConfig {
 	private String s3ListingMarker;
 	private String s3ListingFilter;
 	private String sqsProducerMode;
-	private String s3ThreadNum;
+	private String s3MaxConCount;
 	
 	public String getType() {
 		return this.type;
@@ -118,11 +118,11 @@ public class ArchiveConfig {
 		this.sqsProducerMode = sqsProducerMode;
 	}
 
-	public String getS3ThreadNum() {
-		return this.s3ThreadNum;
+	public String getS3MaxConCount() {
+		return this.s3MaxConCount;
 	}
 
-	public void setS3ThreadNum(String s3ThreadNum) {
-		this.s3ThreadNum = s3ThreadNum;
+	public void setS3ThreadNum(String s3MaxConCount) {
+		this.s3MaxConCount = s3MaxConCount;
 	}	  
 }
