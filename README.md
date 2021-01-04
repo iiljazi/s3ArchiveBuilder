@@ -97,11 +97,6 @@ Value: String
 Description: The "baseDirectory" configuration parameter is the Linux or Windows Directory Path where the application will write logs and use as disk space to generate archives. Sufficient disk space should be allocated to this application in order to support logs as well as NumThreads * Expected Archive Size in bytes
 Examples: "baseDirectory":"/home/ec2-user/BaseDir0/", "baseDirectory":"C:\home\ec2-user\BaseDir0\"
 
-<Drop Aws Credentials Configuration Paremeter>
-<Add Notes how to create an IAM S3 Role and SQS Role and attach it to the EC2 instance running producer or consumer>
-<Drop code for Credentials Provider, or only look for AWS Keys if the customer hasn’t configured roles.
-<Might be worth to have a check to ensure that we can reach the S3 Bucket or SQS Queue from the controller as a check before starting producer/consumer application. 
-
 Key: sourceBucket 
 Value: String
 Description: The "sourceBucket" configuration parameter is the s3 bucket name that will be listed by the SQSProducer in order to generate SQS Work Contexts for SQSConsumer to process. The "sourceBucket" will also be used by SQSConsumer to read objects that will be included in the generated archives. 
@@ -134,25 +129,27 @@ Value: String
 Description: The "queue" configuration parameter specifies the URL to the Standard SQS Queue that will store the SQS Contexts to be processed by SQSConsumer.
 Example: "queue":"https://sqs.us-east-2.amazonaws.com/12345678912345/S3ArchiveBuilder"
 
-<Drop Parameter GroupID>
+Key: s3ListingPrefix
+Value: String
+Description: The "s3ListingPrefix" configuration parameter is used by SQSProducer during s3 listing as it works to build SQS Contexts. The prefix value is used to instruct s3 to only return keys containing the specified prefix. This is a useful parameter if you do not want to list all the objects in a bucket just to obtain a specific subset that you are interested in. 
+Example: "s3ListingPrefix":"Archives/"
 
-listingPrefix>
-Used by SQS Producer during s3 listing as it works to build SQS Contexts. The prefix value is used to return only keys containing the specified prefix. 
+Name: s3ListingMarker 
+Value: String
+Description: The "s3ListingMarker" configuration parameter is the starting key specified in the listing request. The listing marker will tell S3 to return only keys following/after the specified marker. This parameter is useful for cases where the SQSProducer needs to be restarted where it left off. This can happen in the event of an abnormal application exit an application crash or a platform crash. 
+Example: "s3ListingMarker":"/devices/device-id-0000000123/objectFile.txt"
 
-<Change filter to listingFilter>
-Name: listingFilter Value: String
+Name: s3ListingFilter 
+Value: String
 Description: Used by SQS Producer to further filter out keys to be used in archives. By including a filter all keys containing the filter will be included while all keys that don’t contain the filter will be discarded. Could be beneficial for s3 buckets are aren’t optimally partitioned such that a prefix may be used
 
-<++listingMarker>
-Name: listingMarker Value: String
-Description: The starting key of the listing request. The listing marker will tell S3 to return only keys following the specified marker. This parameter is useful for cases where the SQS Producer needs to be restarted where it left off in the event of an abnormal exit or application crash. 
-
-<Change command to sqsProducerMode>
-Name: sqsProducerMode Value: String
+Name: sqsProducerMode 
+Value: String
 Options: [run, dry-run]
 Description: When this value is set to “run” the SQS Producer will generate SQS Work Contexts and start uploading them to the SQS Queue specified. If the value is set to “dry-run” the SQS Producer will run in test mode. That is it will list and generate contexts but rather than uploading to the SQS Queue it will just log them locally. Useful in customer testing to ensure that the SQS Producer is listing correctly and building work contexts to specification. 
+Example: "sqsProducerMode":"run" or "sqsProducerMode":"dry-run"
 
-<Change seThreadNum to s3ConnCount
+<Change seThreadNum to s3MaxConnectionCount
 Name: s3ThreadNum Value: String
 Description: The number of S3 threads to configure in order to read s3 objects in parallel. 
 
