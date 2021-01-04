@@ -2,14 +2,14 @@ public class ArchiveConfig {
 	private String type;
 	private String authType;
 	private String baseDirectory;
-	private String awsCredentials;
+	//private String awsCredentials;
 	private String sourceBucket;
 	private String targetBucket;
 	private String archiveFilePrefix;
 	private String archiveFileFolder;
 	private String region;
 	private String queue;
-	private String groupID;
+	//private String groupID;
 	private String filter;
 	private String command;
 	private String s3ThreadNum;
@@ -38,6 +38,7 @@ public class ArchiveConfig {
 		this.baseDirectory = baseDirectory;
 	}
 
+	/*
 	public String getAwsCredentials() {
 		return this.awsCredentials;
 	}
@@ -45,7 +46,7 @@ public class ArchiveConfig {
 	public void setAwsCredentials(String awsCredentials) {
 		this.awsCredentials = awsCredentials;
 	}
-
+*/
 	public String getSourceBucket() {
 		return this.sourceBucket;
 	}
@@ -94,6 +95,7 @@ public class ArchiveConfig {
 		this.queue = queue;
 	}
 
+	/*
 	public String getGroupID() {
 		return this.groupID;
 	}
@@ -101,7 +103,7 @@ public class ArchiveConfig {
 	public void setGroupID(String groupID) {
 		this.groupID = groupID;
 	}
-
+*/
 	public String getFilter() {
 		return this.filter;
 	}

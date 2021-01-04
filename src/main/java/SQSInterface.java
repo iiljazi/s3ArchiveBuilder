@@ -20,13 +20,11 @@ public class SQSInterface {
 	private AmazonSQS sqs;
 	private ProfileCredentialsProvider credentialsProvider;
 	private String region;
-	private String groupID;
 	private int maxMessages = 1;
 	
-	SQSInterface(String queueURL, String region, String groupID, String authType) {
+	SQSInterface(String queueURL, String region, String authType) {
 		this.queueURL = queueURL;
 		this.region = region;
-		this.groupID = groupID;
 		
 		if(authType.compareTo("iam-keys")==0) {
 			// Credentials in ~/.aws/credentials
@@ -59,10 +57,6 @@ public class SQSInterface {
 		return region;
 	}
 	
-	private String getGroupID() {
-		return groupID;
-	}
-	
 	private int getMaxMessages() {
 		return maxMessages;
 	}
@@ -88,7 +82,7 @@ public class SQSInterface {
         // Send Message: Request
         SendMessageRequest req = new SendMessageRequest()
         		.withQueueUrl(getQueueURL())
-        		.withMessageGroupId(getGroupID())
+        		//.withMessageGroupId(getGroupID())
         		.withMessageBody(body)
         		.withMessageAttributes(message);
        sqs.sendMessage(req);
@@ -99,7 +93,6 @@ public class SQSInterface {
     	String jsonCTX = gson.toJson(ctx);
         SendMessageRequest req = new SendMessageRequest()
         		.withQueueUrl(getQueueURL())
-        		//.withMessageGroupId(getGroupID())
         		.withMessageBody(jsonCTX);
         sqs.sendMessage(req);
     }
