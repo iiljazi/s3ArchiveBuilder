@@ -162,13 +162,16 @@ public class SQSProducer {
 		}
 	}
     
-    public void produce(String filterString) {
+    public void produce(String listingPrefix, String listingMarker, String listingFilter) {
     	//S3 list files by lexigraphic sorting
     	//If files are named as 8-14-2018, then 8-14-2019 will come before 8-15-2018
     	//As it is desired to archive a years worth of data these structures need to be sorted locally
-        ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(this.bucket);
+        ListObjectsV2Request req = new ListObjectsV2Request()
+        		.withBucketName(this.bucket)
+        		.withPrefix(listingPrefix)
+        		.withStartAfter(listingMarker);
         ListObjectsV2Result listing;
-        logger.info("Starting S3 Object Listing on: [" + bucket + "] including only Keys containing: " + filterString);
+        logger.info("Starting S3 Object Listing on: [" + bucket + "] including only Keys containing: " + listingFilter);
         do {	
         	listing=s3.s3ListObjects(req);
             List<S3ObjectSummary> results = listing.getObjectSummaries();
@@ -177,7 +180,7 @@ public class SQSProducer {
         	for(S3ObjectSummary summary : results) {
         		// Get Parameters of Listing Response
         		String key = summary.getKey();
-        		if(key.contains(filterString)) {
+        		if(key.contains(listingFilter)) {
         			long size = summary.getSize();
         			String fileName = generateFileName(key);
         			Date date = generateDate(fileName);

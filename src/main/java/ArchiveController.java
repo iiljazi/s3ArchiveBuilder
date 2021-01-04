@@ -55,11 +55,11 @@ public class ArchiveController {
 	    // Create Required Producer Object
 	    this.logger.info("SQS Controller Creating Classes required by SQS Producer ... ");
 	    this.producer = new SQSProducer(configCTX.getSourceBucket(), this.s3, this.sqs, 
-	    		this.logger,logPath.getAbsolutePath(), configCTX.getCommand());
+	    		this.logger,logPath.getAbsolutePath(), configCTX.getSqsProducerMode());
 	    
 	    // Start SQSProducer Thread
 	    this.logger.info("SQS Controller Starting SQS Producer Thread  ... ");
-	    this.producer.produce(configCTX.getFilter());
+	    this.producer.produce(configCTX.getS3ListingPrefix(), configCTX.getS3ListingMarker(), configCTX.getS3ListingFilter());
 	}
 	
 	private void initSQSConsumer(ArchiveConfig configCTX) {
