@@ -26,8 +26,8 @@ public class ArchiveController {
 		this.logger.info("SQS Controller invoked on Base Directory: " + baseDir);
 		
 		// Create S3/SQS Interfaces Required by Producer/Consumer 
-		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getTargetBucket(),configCTX.getRegion(), configCTX.getArchiveFileFolder(),
-				Integer.valueOf(configCTX.getS3MaxConCount()), configCTX.getAuthType());
+		this.s3 = new S3Interface(configCTX.getSourceBucket(), configCTX.getTargetBucket(),configCTX.getRegion(), 
+				configCTX.getArchiveFileFolder(),Integer.valueOf(configCTX.getS3MaxConCount()), configCTX.getAuthType());
 		this.sqs = new SQSInterface(configCTX.getQueue(), configCTX.getRegion(), configCTX.getAuthType());
 		
 		// Initialize Producer
@@ -80,19 +80,16 @@ public class ArchiveController {
 		this.consumer.consume();
 		
 		// Wait for Consumers to Shutdown and Terminate
-		//if(configCTX.getType().compareTo("consumer")==0) {
-			// Ensure consumer executor is closed
-			while(!this.consumer.executor.isTerminated()){
-				this.logger.info("SQS Consumers Actively Working ...");
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		while(!this.consumer.executor.isTerminated()){
+			this.logger.info("SQS Consumers Actively Working ...");
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			this.logger.info("Successfully Shutdown SQS Consumer Threads ...");
-		//}
+		}
+		this.logger.info("Successfully Shutdown SQS Consumer Threads ...");
 	}
 
 	// Main Method

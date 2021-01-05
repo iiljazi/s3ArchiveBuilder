@@ -32,7 +32,8 @@ public class S3Interface {
 		S3Interface.s3ArchiveFolder = s3ArchiveFolder;
 		S3Interface.targetBucket = targetBucket;
 		this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(s3MaxConCount);
-		ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(s3MaxConCount);
+		//ClientConfiguration s3ClientConfig = new ClientConfiguration().withMaxConnections(s3MaxConCount);
+		//s3ClientConfig.setSocketTimeout(20000);
 		
 		if(authType.compareTo("iam-keys")==0) {
 			// Credentials in ~/.aws/credentials
@@ -48,13 +49,13 @@ public class S3Interface {
 	        s3 = AmazonS3ClientBuilder.standard()
 	        		.withCredentials(credentialsProvider)
 	        		.withRegion(getRegion())
-	        		.withClientConfiguration(s3ClientConfig)
+	        		//.withClientConfiguration(s3ClientConfig)
 	        		.build();
         }
 		else if(authType.compareTo("iam-role")==0) {
 	        s3 = AmazonS3ClientBuilder.standard()
 	        		.withRegion(getRegion())
-	        		.withClientConfiguration(s3ClientConfig)
+	        		//.withClientConfiguration(s3ClientConfig)
 	        		.build();
 		}
 	}
@@ -143,10 +144,9 @@ public class S3Interface {
         return listing;
 	}
 	
-	public S3InputStreamTuple submitObjectIntoTar(S3ArchiveObject obj) {
+	public Future<InputStream> submitObjectIntoTar(S3ArchiveObject obj) {
 		migrationCallable job = new migrationCallable(obj);
 		Future<InputStream> result = this.executor.submit(job);
-		S3InputStreamTuple inStream3Tuple = new S3InputStreamTuple(result, obj.getLocalFileName(), obj.getSize());
-		return inStream3Tuple;
+		return result;
 	}
 }

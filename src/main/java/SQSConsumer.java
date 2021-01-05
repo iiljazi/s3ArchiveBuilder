@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -5,9 +6,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.model.Message;
 import com.google.gson.Gson;
 
@@ -57,7 +60,9 @@ public class SQSConsumer {
 		this.logger.info("Reading All S3 Objects In SQS Context and Writting To Tar Archive: " + ctx.getLocalArchiveName());
 		for(S3ArchiveObject obj : ctx.getS3ArchiveObjects()){
 			obj.setLocalDirectory(ctx.getLocalDirectory());
-			inStream3Tuple.add(this.s3.submitObjectIntoTar(obj));
+			Future<InputStream> s3ObjectFuture = this.s3.submitObjectIntoTar(obj);
+			S3InputStreamTuple tuple = new S3InputStreamTuple(s3ObjectFuture, obj.getLocalFileName(), obj.getSize());
+			inStream3Tuple.add(tuple);
 		}
 			
 		// Waiting for all S3 Objects to be read and archived
@@ -91,6 +96,7 @@ public class SQSConsumer {
 			}
 		}
 			
+		
 		// Close Tar Archives OutputStream
 		this.logger.info("Finished Building Tar Archive: " + ctx.getLocalArchiveName());
 		tar.closeTarGzArchive();
