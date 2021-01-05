@@ -91,18 +91,24 @@ Key: type
 Description: The "type" configuration parameter is set to specify whether the application will run the producer or the consumer 
 Examples: "type":"producer", "type":"consumer"
 
+Key: authType 
+Description: The "authType" configuration parameter is set to specify whether the application will use AWS IAM Keys based access (~/.aws/credentials) or AWS IAM Role based access. For running the project on EC2 or EKS it is recommended that IAM Role Based access be used for increased security.
+Examples: "authType":"iam-keys", "authType":"iam-role"
+
 Key: baseDirectory 
 Description: The "baseDirectory" configuration parameter is the Linux or Windows Directory Path where the application will write logs and use as disk space to generate archives. Sufficient disk space should be allocated to this application in order to support logs as well as NumThreads * Expected Archive Size in bytes
 Examples: "baseDirectory":"/home/ec2-user/BaseDir0/", "baseDirectory":"C:\home\ec2-user\BaseDir0\"
 
 Key: sourceBucket 
 Description: The "sourceBucket" configuration parameter is the s3 bucket name that will be listed by the SQSProducer in order to generate SQS Work Contexts for SQSConsumer to process. The "sourceBucket" will also be used by SQSConsumer to read objects that will be included in the generated archives. 
+Example: "sourceBucket":"migration-archive-objects"
 
 Key: targetBucket 
 Description: The "targetBucket" configuration parameter is the s3 bucket name that SQSConsumer will use to upload generated archives. This value may be equal to sourceBucket if generated archives are to be written to the same s3 bucket. 
+Example: "targetBucket":"migration-archive-objects-2"
 
 Key: archiveFilePrefix 
-Description: The archiveFilePrefix configuration parameter is prepended to the generated archive file name. 
+Description: The archiveFilePrefix configuration parameter is prepended to the generated archive file name.
 Example: "archiveFilePrefix":"Archive" 
 ArchiveFileName: <archiveFilePrefix>_<device_id>.tar.gz 
 i.e: Archive_device-025dd26c-c7ce-44c3-839d-707ff05c1edf_2018.tar.gz 
@@ -131,6 +137,7 @@ Example: "s3ListingMarker":"/devices/device-id-0000000123/objectFile.txt"
 
 Key: s3ListingFilter 
 Description: Used by SQS Producer to further filter out keys to be used in archives. By including a filter all keys containing the filter will be included while all keys that don’t contain the filter will be discarded. Could be beneficial for s3 buckets are aren’t optimally partitioned such that a prefix may be used
+Example: "s3ListingFilter":"5m-device-metrics"
 
 Key: sqsProducerMode 
 Options: [run, dry-run]
